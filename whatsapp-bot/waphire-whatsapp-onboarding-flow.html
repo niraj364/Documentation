@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>WapHire Jobs — WhatsApp Candidate Onboarding</title>
+<style>
+  :root {
+    --wh-blue: #246AFE;
+    --wh-blue-dark: #1A54D9;
+    --wh-blue-soft: #E8F0FF;
+    --wa-teal: #0B7A6B;
+    --wa-teal-deep: #075E54;
+    --wa-out: #D9FDD3;
+    --wa-out-edge: #B7E8AE;
+    --wa-in: #FFFFFF;
+    --wa-bg: #E5DDD5;
+    --surface: #FFFFFF;
+    --text: #111B21;
+    --muted: #667781;
+    --border: #E9EDEF;
+    --success: #1FA855;
+    --success-soft: #E7F8ED;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --shadow: 0 1px 1.5px rgba(11, 20, 26, .12);
+    --shadow-md: 0 8px 24px rgba(16, 24, 40, .12);
+    --radius: 12px;
+    --font: "Segoe UI", system-ui, -apple-system, Roboto, "Noto Sans Devanagari", "Noto Sans", Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    min-height: 100vh;
+    color: var(--text);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #E8F0FF 0%, transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, #E7F8ED 0%, transparent 45%),
+      #F4F6F9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 16px 40px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .hero {
+    text-align: center;
+    max-width: 380px;
+  }
+  .hero .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--wh-blue-dark);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    margin: 0 0 8px;
+    font-size: clamp(22px, 5vw, 26px);
+    font-weight: 800;
+    letter-spacing: -.35px;
+    line-height: 1.2;
+  }
+  .hero p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  /* Phone shell */
+  .phone {
+    width: min(100%, 380px);
+    height: min(82vh, 780px);
+    background: #0B0F14;
+    border-radius: 44px;
+    padding: 11px;
+    box-shadow: 0 40px 80px -24px rgba(16,24,40,.45), inset 0 0 0 1px rgba(255,255,255,.06);
+    position: relative;
+  }
+  .notch {
+    position: absolute;
+    top: 18px; left: 50%;
+    transform: translateX(-50%);
+    width: 108px; height: 24px;
+    background: #000;
+    border-radius: 14px;
+    z-index: 8;
+  }
+  .screen {
+    width: 100%; height: 100%;
+    border-radius: 34px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--wa-bg);
+    position: relative;
+  }
+
+  /* Subtle WA-style wallpaper (CSS only — no heavy assets) */
+  .wallpaper {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    opacity: .22;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,.55) 0 1px, transparent 2px),
+      radial-gradient(circle at 70% 55%, rgba(0,0,0,.08) 0 1px, transparent 2px),
+      linear-gradient(135deg, rgba(255,255,255,.15), transparent 40%);
+    background-size: 18px 18px, 22px 22px, 100% 100%;
+    z-index: 0;
+  }
+
+  .statusbar {
+    position: relative; z-index: 2;
+    height: 34px;
+    background: linear-gradient(180deg, var(--wa-teal-deep), var(--wa-teal));
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 22px 0;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: 12.5px; font-weight: 700;
+  }
+  .statusbar .icons { display: flex; gap: 5px; align-items: center; }
+  .statusbar svg { width: 14px; height: 14px; }
+
+  .chat-header {
+    position: relative; z-index: 2;
+    background: var(--wa-teal);
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px 12px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  }
+  .chat-header .back { width: 20px; height: 20px; color: #fff; flex-shrink: 0; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: #fff;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.25);
+  }
+  .avatar-mark {
+    width: 22px; height: 22px; border-radius: 7px;
+    background: linear-gradient(145deg, var(--wh-blue), #4C8DFF);
+    color: #fff; font-size: 12px; font-weight: 800;
+    display: grid; place-items: center;
+    letter-spacing: -.5px;
+  }
+  .hdr-info { flex: 1; min-width: 0; }
+  .hdr-info .name { color: #fff; font-size: 15.5px; font-weight: 700; }
+  .hdr-info .status {
+    color: rgba(255,255,255,.88); font-size: 11.5px;
+    display: flex; align-items: center; gap: 5px; margin-top: 1px;
+  }
+  .hdr-info .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #7CFFB2; box-shadow: 0 0 0 2px rgba(124,255,178,.25);
+  }
+  .hdr-actions { display: flex; gap: 14px; color: #fff; }
+  .hdr-actions svg { width: 18px; height: 18px; }
+
+  .progress {
+    position: relative; z-index: 2;
+    padding: 8px 14px 0;
+    display: none; flex-shrink: 0;
+  }
+  .progress.show { display: block; }
+  .progress-label {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .04em; margin-bottom: 5px;
+  }
+  .progress-track { display: flex; gap: 4px; }
+  .progress-track span {
+    flex: 1; height: 3px; border-radius: 99px;
+    background: rgba(255,255,255,.55);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+  }
+  .progress-track span.on { background: var(--wh-blue); }
+
+  .chat {
+    position: relative; z-index: 1;
+    flex: 1; overflow-y: auto;
+    padding: 12px 10px 14px;
+    display: flex; flex-direction: column; gap: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chat::-webkit-scrollbar { width: 0; }
+
+  .daychip {
+    align-self: center;
+    background: rgba(255,255,255,.92);
+    color: #54656F;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 12px; border-radius: 8px;
+    margin: 2px 0 10px;
+    box-shadow: var(--shadow);
+  }
+
+  .msg {
+    display: flex; margin-bottom: 7px;
+    opacity: 0; transform: translateY(6px);
+    animation: rise .28s ease forwards;
+  }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  .msg.in { justify-content: flex-start; }
+  .msg.out { justify-content: flex-end; }
+
+  .bubble {
+    max-width: min(82%, 280px);
+    padding: 8px 10px 6px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.48;
+    box-shadow: var(--shadow);
+    position: relative;
+    word-break: break-word;
+  }
+  .msg.in .bubble {
+    background: var(--wa-in);
+    border-top-left-radius: 4px;
+    border: 1px solid rgba(0,0,0,.03);
+  }
+  .msg.out .bubble {
+    background: var(--wa-out);
+    border-top-right-radius: 4px;
+    border: 1px solid var(--wa-out-edge);
+  }
+  .bubble .meta {
+    font-size: 10px; color: var(--muted);
+    text-align: right; margin-top: 4px;
+    letter-spacing: .01em;
+  }
+  .bubble b { font-weight: 700; }
+  .bubble .lead { font-weight: 700; }
+
+  /* Quick replies */
+  .qr {
+    display: flex; flex-direction: column; gap: 7px;
+    margin: 4px 0 12px; max-width: 88%; align-self: flex-start;
+  }
+  .qr.row {
+    flex-direction: row; flex-wrap: wrap; max-width: 94%;
+  }
+  .qr-btn {
+    appearance: none;
+    background: #fff;
+    border: 1.5px solid #DCE3EA;
+    color: var(--text);
+    font: inherit;
+    font-size: 13.6px; font-weight: 650;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: 0 1px 2px rgba(16,24,40,.05);
+    transition: border-color .15s ease, background .15s ease, transform .12s ease, box-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .qr.row .qr-btn { border-radius: 999px; text-align: center; }
+  .qr-btn:hover:not(:disabled) {
+    border-color: var(--wh-blue);
+    background: var(--wh-blue-soft);
+    box-shadow: 0 2px 8px rgba(36,106,254,.12);
+  }
+  .qr-btn:active:not(:disabled) { transform: scale(.98); }
+  .qr-btn:focus-visible {
+    outline: 2px solid var(--wh-blue);
+    outline-offset: 2px;
+  }
+  .qr-btn:disabled { opacity: .55; cursor: default; }
+  .qr-btn.voice {
+    background: var(--wh-blue-soft);
+    border-color: #BFDBFE;
+    color: var(--wh-blue-dark);
+  }
+  .qr-btn.primary {
+    background: var(--wh-blue);
+    border-color: var(--wh-blue);
+    color: #fff;
+  }
+  .qr-btn.primary:hover:not(:disabled) {
+    background: var(--wh-blue-dark);
+    border-color: var(--wh-blue-dark);
+    color: #fff;
+  }
+  .qr.faded { opacity: .5; pointer-events: none; }
+
+  .confirm {
+    display: inline-flex; align-items: center; gap: 6px;
+    align-self: flex-start;
+    background: var(--success-soft);
+    color: #0E7A42;
+    font-size: 12.5px; font-weight: 700;
+    padding: 7px 12px; border-radius: 999px;
+    margin: 2px 0 10px;
+    border: 1px solid #BEEBCF;
+    animation: rise .28s ease;
+  }
+  .confirm svg { width: 12px; height: 12px; }
+
+  .doc {
+    display: flex; align-items: center; gap: 10px;
+    align-self: flex-end;
+    background: var(--wa-out);
+    border: 1px solid var(--wa-out-edge);
+    border-radius: var(--radius);
+    border-top-right-radius: 4px;
+    padding: 10px 12px;
+    max-width: 78%;
+    box-shadow: var(--shadow);
+    margin-bottom: 8px;
+    animation: rise .28s ease;
+  }
+  .doc-icon {
+    width: 38px; height: 38px; border-radius: 9px;
+    background: #fff; color: #D64545;
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .doc-icon svg { width: 18px; height: 18px; }
+  .doc-name { font-size: 13px; font-weight: 700; }
+  .doc-size { font-size: 11px; color: var(--muted); }
+
+  .voice {
+    display: flex; align-items: center; gap: 10px;
+    align-self: flex-end;
+    background: var(--wa-out);
+    border: 1px solid var(--wa-out-edge);
+    border-radius: var(--radius);
+    border-top-right-radius: 4px;
+    padding: 10px 12px;
+    max-width: 72%;
+    box-shadow: var(--shadow);
+    margin-bottom: 8px;
+    animation: rise .28s ease;
+  }
+  .voice .play {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--wh-blue); color: #fff;
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .voice .play svg { width: 12px; height: 12px; }
+  .wave { display: flex; gap: 2px; align-items: center; flex: 1; height: 22px; }
+  .wave i {
+    display: block; width: 2.5px; border-radius: 2px;
+    background: #8DA994;
+  }
+  .voice-time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .process {
+    align-self: flex-start;
+    background: #fff;
+    border-radius: var(--radius);
+    border-top-left-radius: 4px;
+    padding: 12px 13px;
+    max-width: 86%;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+    border: 1px solid rgba(0,0,0,.03);
+    animation: rise .28s ease;
+  }
+  .process-title {
+    font-size: 13.5px; font-weight: 750;
+    display: flex; align-items: center; gap: 7px;
+    margin-bottom: 8px;
+  }
+  .process-title .ico {
+    width: 22px; height: 22px; border-radius: 6px;
+    background: #FEE2E2; color: #D64545;
+    display: grid; place-items: center;
+  }
+  .process-title .ico svg { width: 13px; height: 13px; }
+  .p-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--muted);
+    padding: 5px 0; opacity: .4;
+    transition: opacity .2s ease, color .2s ease;
+  }
+  .p-item.done { opacity: 1; color: var(--text); }
+  .p-item .chk {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1.5px solid #D7DBDF;
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .p-item.done .chk {
+    background: var(--success); border-color: var(--success); color: #fff;
+  }
+  .p-item.done .chk svg { width: 9px; height: 9px; }
+
+  .skills {
+    display: flex; flex-wrap: wrap; gap: 7px;
+    margin: 4px 0 8px; max-width: 92%; align-self: flex-start;
+  }
+  .skill {
+    background: #fff; border: 1.5px solid #DCE3EA;
+    color: var(--text); font: inherit; font-size: 13px; font-weight: 600;
+    min-height: 40px; padding: 8px 13px; border-radius: 999px;
+    cursor: pointer; transition: .15s ease;
+  }
+  .skill:hover { border-color: var(--wh-blue); }
+  .skill.on {
+    background: var(--wh-blue-soft);
+    border-color: #93C5FD;
+    color: var(--wh-blue-dark);
+  }
+  .skill.on::before { content: "✓ "; }
+  .done-btn {
+    align-self: flex-start;
+    background: var(--wh-blue); color: #fff; border: none;
+    font: inherit; font-size: 13.5px; font-weight: 700;
+    min-height: 42px; padding: 9px 20px; border-radius: 11px;
+    cursor: pointer; margin-bottom: 12px;
+    opacity: .4; pointer-events: none;
+    transition: opacity .15s ease, transform .12s ease;
+  }
+  .done-btn.on { opacity: 1; pointer-events: auto; }
+  .done-btn.on:active { transform: scale(.98); }
+
+  .summary, .job, .success {
+    align-self: flex-start;
+    background: #fff;
+    border-radius: 13px;
+    border-top-left-radius: 4px;
+    max-width: 90%;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 10px;
+    border: 1px solid rgba(0,0,0,.03);
+    overflow: hidden;
+    animation: rise .28s ease;
+  }
+  .summary { padding: 13px 14px; }
+  .summary h4 {
+    margin: 0 0 10px; font-size: 14px; font-weight: 800;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .summary h4 .ok {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--success); color: #fff;
+    display: grid; place-items: center;
+  }
+  .summary h4 .ok svg { width: 10px; height: 10px; }
+  .s-row {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 7px 0; border-top: 1px dashed #EEE;
+    font-size: 12.8px;
+  }
+  .s-row:first-of-type { border-top: none; }
+  .s-row .k { color: var(--muted); font-weight: 600; }
+  .s-row .v { font-weight: 700; text-align: right; max-width: 62%; }
+
+  .job-top { padding: 12px 12px 8px; display: flex; gap: 10px; }
+  .job-emoji {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--wh-blue-soft);
+    display: grid; place-items: center; font-size: 17px; flex-shrink: 0;
+  }
+  .job-title { font-size: 14.5px; font-weight: 800; line-height: 1.25; }
+  .job-co { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .job-meta {
+    padding: 0 12px 10px;
+    display: flex; flex-direction: column; gap: 4px;
+    font-size: 12.2px; color: var(--muted);
+  }
+  .job-meta b { color: var(--text); font-weight: 700; }
+  .job-actions { display: flex; border-top: 1px solid #F0F0F0; }
+  .job-actions button {
+    flex: 1; border: none; background: none;
+    min-height: 44px; padding: 11px 6px;
+    font: inherit; font-size: 13px; font-weight: 750;
+    color: var(--wh-blue); cursor: pointer;
+    border-right: 1px solid #F0F0F0;
+    transition: background .15s ease;
+  }
+  .job-actions button:last-child { border-right: none; color: var(--success); }
+  .job-actions button:hover { background: #FAFBFC; }
+  .job-actions button:disabled { opacity: .45; }
+
+  .success { padding: 14px; background: var(--success-soft); border-color: #BEEBCF; }
+  .success .badge-ok {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--success); color: #fff;
+    display: grid; place-items: center; margin-bottom: 8px;
+  }
+  .success .badge-ok svg { width: 16px; height: 16px; }
+  .success .t { font-weight: 800; font-size: 14px; }
+  .success .s { margin-top: 4px; font-size: 12.5px; color: #3E5A7D; line-height: 1.4; }
+
+  .typing {
+    display: flex; margin-bottom: 8px;
+    animation: rise .2s ease;
+  }
+  .typing-b {
+    background: #fff; border-radius: var(--radius);
+    border-top-left-radius: 4px;
+    padding: 11px 14px; box-shadow: var(--shadow);
+    display: flex; gap: 4px; align-items: center;
+  }
+  .typing-b span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #9CA6AB;
+    animation: bounce 1.15s infinite;
+  }
+  .typing-b span:nth-child(2) { animation-delay: .15s; }
+  .typing-b span:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: none; opacity: .45; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .start {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    padding: 24px 16px; text-align: center;
+  }
+  .start button {
+    appearance: none; border: none;
+    background: var(--wh-blue); color: #fff;
+    font: inherit; font-size: 14.5px; font-weight: 750;
+    min-height: 48px; padding: 12px 26px; border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(36,106,254,.28);
+    transition: transform .12s ease, background .15s ease;
+  }
+  .start button:hover { background: var(--wh-blue-dark); }
+  .start button:active { transform: scale(.98); }
+  .start p { margin: 0; font-size: 12.5px; color: var(--muted); max-width: 220px; line-height: 1.4; }
+
+  .composer {
+    position: relative; z-index: 2;
+    background: #F0F2F5;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 8px 12px; flex-shrink: 0;
+  }
+  .composer .field {
+    flex: 1; background: #fff; border-radius: 22px;
+    padding: 10px 14px; font-size: 13.5px; color: var(--muted);
+    border: 1px solid #E5E7EB;
+  }
+  .composer .mic {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--wa-teal); color: #fff;
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .composer .mic svg { width: 18px; height: 18px; }
+
+  .replay {
+    appearance: none; border: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; color: var(--wh-blue-dark);
+    border: 1px solid var(--border);
+    font: inherit; font-size: 13.5px; font-weight: 750;
+    min-height: 44px; padding: 10px 18px; border-radius: 12px;
+    cursor: pointer; box-shadow: var(--shadow);
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .replay:hover { background: var(--wh-blue-soft); border-color: #BFDBFE; }
+
+  .path-note {
+    align-self: center;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    background: rgba(255,255,255,.85);
+    padding: 4px 10px; border-radius: 8px;
+    margin: 6px 0 8px;
+  }
+
+  @media (max-width: 440px) {
+    body { padding: 12px 10px 24px; align-items: flex-start; }
+    .phone { height: min(88vh, 740px); border-radius: 36px; padding: 9px; }
+    .screen { border-radius: 28px; }
+    .hero h1 { font-size: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .msg, .confirm, .doc, .voice, .process, .summary, .job, .success, .typing { animation: none; opacity: 1; transform: none; }
+    .typing-b span { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="hero">
+    <div class="badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      WapHire Jobs on WhatsApp
+    </div>
+    <h1>Hi → Job, in one conversation</h1>
+    <p>Tap through the candidate journey: language, resume or guided questions, voice, skills, confirmation, matched jobs, and apply.</p>
+  </header>
+
+  <div class="phone" role="application" aria-label="WapHire WhatsApp chat mockup">
+    <div class="notch" aria-hidden="true"></div>
+    <div class="screen">
+      <div class="wallpaper" aria-hidden="true"></div>
+      <div class="statusbar">
+        <span>9:41</span>
+        <div class="icons" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 17h2v-4H2v4zm4 0h2V9H6v8zm4 0h2V5h-2v12zm4 0h2v-8h-2v8zm4-13v13h2V4h-2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l-8-8a11 11 0 0116 0l-8 8z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="7" width="18" height="10" rx="2"/></svg>
+        </div>
+      </div>
+
+      <div class="chat-header">
+        <svg class="back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        <div class="avatar" aria-hidden="true"><div class="avatar-mark">W</div></div>
+        <div class="hdr-info">
+          <div class="name">WapHire Jobs</div>
+          <div class="status"><span class="dot"></span><span id="statusText">Online</span></div>
+        </div>
+        <div class="hdr-actions" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.5 15.5 0 006.6 6.6l2.2-2.2a1 1 0 011.1-.2 11.4 11.4 0 003.6.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.6 3.6 1 1 0 01-.2 1.1L6.6 10.8z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </div>
+      </div>
+
+      <div class="progress" id="progressWrap" aria-hidden="true">
+        <div class="progress-label">Profile setup</div>
+        <div class="progress-track" id="progressDots"></div>
+      </div>
+
+      <div class="chat" id="chatBody" aria-live="polite">
+        <div class="daychip">TODAY</div>
+        <div class="start" id="startCta">
+          <button type="button" id="startBtn">👋 Say “Hi” to start</button>
+          <p>One step at a time — no long forms</p>
+        </div>
+      </div>
+
+      <div class="composer" aria-hidden="true">
+        <div class="field">Message</div>
+        <div class="mic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0"/><path d="M12 18v3"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="replay" id="replayBtn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+    Reset conversation
+  </button>
+</div>
+
+<script>
+(function () {
+  const chat = document.getElementById("chatBody");
+  const statusText = document.getElementById("statusText");
+  const progressWrap = document.getElementById("progressWrap");
+  const progressDots = document.getElementById("progressDots");
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';
+
+  let profile = {};
+  let locale = "hi";
+  let busy = false;
+
+  const copy = {
+    hi: {
+      welcome: 'नमस्ते 👋<br><span class="lead">मैं WapHire का Job Assistant हूँ।</span><br><br>मैं आपकी skills और experience के हिसाब से सही job ढूँढने में मदद करूँगा।<br><br>सबसे पहले अपनी भाषा चुनें।',
+      afterLang: "बहुत अच्छा! 👍<br>सबसे पहले देखते हैं कि आपका Resume तैयार है या नहीं।",
+      resumeQ: "क्या आपके पास Resume है?",
+      resumeYes: "हाँ, Resume है",
+      resumeNo: "नहीं, Resume नहीं",
+      sendResume: "बहुत बढ़िया! अपना Resume यहाँ भेज दें 📄",
+      attach: "📎 Attach Resume.pdf",
+      resumeGot: "Resume मिल गया ✅<br>मैं आपके Resume से आपकी skills और experience समझ रहा हूँ।",
+      extractedIntro: "मैंने आपके Resume से ये जानकारी समझी है:",
+      confirmInfo: "क्या ये जानकारी सही है?",
+      ok: "✓ सही है",
+      fix: "✏️ सुधारें",
+      seekRole: "आप किस तरह की job ढूँढ रहे हैं?",
+      noResumeOk: "कोई बात नहीं 😊<br>मैं कुछ आसान सवाल पूछकर आपका profile तैयार कर दूँगा।",
+      currentWork: "आप अभी क्या काम करते हैं?",
+      voiceUnderstood: "मैंने समझा:<br><b>आप 4-wheeler driver हैं।</b>",
+      desiredRole: "आप किस role के लिए job ढूँढ रहे हैं?",
+      experience: "आपको इस काम का कितना experience है?",
+      location: "आप कहाँ job करना चाहते हैं?",
+      skills: 'आपको इनमें से कौन-कौन सा काम आता है? <span style="color:#667781;font-weight:500">(एक से ज़्यादा चुन सकते हैं)</span>',
+      done: "Done",
+      availability: "आप कब से job शुरू कर सकते हैं?",
+      profileReady: "आपका profile तैयार है ✅",
+      profileConfirm: "क्या ये जानकारी सही है?",
+      confirmYes: "✅ सही है",
+      confirmEdit: "✏️ बदलना है",
+      searching: "ठीक है 👍<br>मैं आपके लिए matching jobs ढूँढ रहा हूँ...",
+      found: 'आपके profile के आधार पर <b>8 jobs</b> मिली हैं 🎯',
+      applyIntro: (j) => `आप इस job के लिए apply कर रहे हैं:<br><br><b>${j.title}</b><br>${j.co}<br>${j.pay}<br>${j.loc}`,
+      applyQ: "क्या आप apply करना चाहते हैं?",
+      apply: "✅ Apply",
+      back: "↩️ Back",
+      successTitle: "Application submitted successfully! 🎉",
+      successSub: (j) => `${j.title} · ${j.co} — आप status कभी भी check कर सकते हैं।`,
+      track: "📊 Track Application",
+      moreJobs: "🔍 Find More Jobs",
+      viewProfile: "👤 View Profile",
+      editHint: "ठीक है — कुछ आसान सवालों से profile ठीक करते हैं।",
+    },
+    en: {
+      welcome: 'Hi 👋<br><span class="lead">I\'m WapHire\'s Job Assistant.</span><br><br>I\'ll help you find the right job based on your skills and experience.<br><br>First, pick your language.',
+      afterLang: "Great! 👍<br>First, let's see if you have a resume ready.",
+      resumeQ: "Do you have a resume?",
+      resumeYes: "Yes, I have a resume",
+      resumeNo: "No resume",
+      sendResume: "Awesome! Please send your resume here 📄",
+      attach: "📎 Attach Resume.pdf",
+      resumeGot: "Resume received ✅<br>I'm reading your skills and experience.",
+      extractedIntro: "Here's what I understood from your resume:",
+      confirmInfo: "Does this look correct?",
+      ok: "✓ Looks good",
+      fix: "✏️ Fix it",
+      seekRole: "What kind of job are you looking for?",
+      noResumeOk: "No problem 😊<br>I'll ask a few easy questions and build your profile.",
+      currentWork: "What do you do right now?",
+      voiceUnderstood: "I heard:<br><b>You're a 4-wheeler driver.</b>",
+      desiredRole: "Which role are you looking for?",
+      experience: "How much experience do you have?",
+      location: "Where do you want to work?",
+      skills: 'Which of these can you do? <span style="color:#667781;font-weight:500">(pick one or more)</span>',
+      done: "Done",
+      availability: "When can you start?",
+      profileReady: "Your profile is ready ✅",
+      profileConfirm: "Is this information correct?",
+      confirmYes: "✅ Correct",
+      confirmEdit: "✏️ Change",
+      searching: "Got it 👍<br>Finding matching jobs for you...",
+      found: 'Based on your profile, I found <b>8 jobs</b> 🎯',
+      applyIntro: (j) => `You're applying for:<br><br><b>${j.title}</b><br>${j.co}<br>${j.pay}<br>${j.loc}`,
+      applyQ: "Do you want to apply?",
+      apply: "✅ Apply",
+      back: "↩️ Back",
+      successTitle: "Application submitted successfully! 🎉",
+      successSub: (j) => `${j.title} · ${j.co} — you can check status anytime.`,
+      track: "📊 Track Application",
+      moreJobs: "🔍 Find More Jobs",
+      viewProfile: "👤 View Profile",
+      editHint: "Okay — let's fix your profile with a few easy questions.",
+    },
+  };
+  const t = () => copy[locale] || copy.hi;
+
+  const JOBS = [
+    { emoji: "🚗", title: "Driver", co: "ABC Logistics", loc: "Noida Sector 62", pay: "₹18,000 – ₹25,000/month", exp: "2–5 years", type: "Full-time" },
+    { emoji: "🚚", title: "Delivery Driver", co: "Speedex Cargo", loc: "Sector 18, Noida", pay: "₹16,000 – ₹22,000/month", exp: "1–3 years", type: "Full-time" },
+    { emoji: "🔧", title: "Technician", co: "FixIt Services", loc: "Noida Extension", pay: "₹19,000 – ₹27,000/month", exp: "3–5 years", type: "Full-time" },
+  ];
+
+  function scrollDown() { chat.scrollTop = chat.scrollHeight; }
+  function el(html) {
+    const d = document.createElement("div");
+    d.innerHTML = html.trim();
+    return d.firstElementChild;
+  }
+  function now() {
+    const d = new Date();
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+  function botText(html) {
+    const row = el(`<div class="msg in"><div class="bubble"><div class="txt">${html}</div><div class="meta">${now()}</div></div></div>`);
+    chat.appendChild(row); scrollDown(); return row;
+  }
+  function userText(html) {
+    const row = el(`<div class="msg out"><div class="bubble"><div class="txt">${html}</div><div class="meta">${now()}</div></div></div>`);
+    chat.appendChild(row); scrollDown(); return row;
+  }
+  async function typing(ms = 700) {
+    statusText.textContent = "typing…";
+    const row = el(`<div class="typing" aria-label="WapHire is typing"><div class="typing-b"><span></span><span></span><span></span></div></div>`);
+    chat.appendChild(row); scrollDown();
+    await sleep(ms);
+    row.remove();
+    statusText.textContent = "Online";
+  }
+  function setProgress(step, total) {
+    progressWrap.classList.add("show");
+    progressWrap.setAttribute("aria-hidden", "false");
+    progressDots.innerHTML = "";
+    for (let i = 0; i < total; i++) {
+      const s = document.createElement("span");
+      if (i < step) s.classList.add("on");
+      progressDots.appendChild(s);
+    }
+  }
+  function hideProgress() {
+    progressWrap.classList.remove("show");
+    progressWrap.setAttribute("aria-hidden", "true");
+  }
+  function fadeQr(wrap) {
+    wrap.classList.add("faded");
+    wrap.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+  }
+  function qrList(options, row = false) {
+    const wrap = el(`<div class="qr${row ? " row" : ""}" role="group"></div>`);
+    options.forEach((o) => {
+      const b = el(`<button type="button" class="qr-btn${o.voice ? " voice" : ""}${o.primary ? " primary" : ""}">${o.label}</button>`);
+      b.addEventListener("click", async () => {
+        if (busy) return;
+        fadeQr(wrap);
+        await o.onClick(o.label);
+      });
+      wrap.appendChild(b);
+    });
+    chat.appendChild(wrap); scrollDown(); return wrap;
+  }
+  function confirmChip(label) {
+    chat.appendChild(el(`<div class="confirm" role="status">${CHECK}${label}</div>`));
+    scrollDown();
+  }
+  function docBubble(name, size) {
+    chat.appendChild(el(`<div class="doc"><div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6"/></svg></div><div><div class="doc-name">${name}</div><div class="doc-size">${size}</div></div></div>`));
+    scrollDown();
+  }
+  function voiceBubble(duration) {
+    const bars = Array.from({ length: 22 }, (_, i) => `<i style="height:${6 + Math.round(Math.sin(i * 0.9) * 8 + 8)}px"></i>`).join("");
+    chat.appendChild(el(`<div class="voice"><div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div><div class="wave">${bars}</div><div class="voice-time">${duration}</div></div>`));
+    scrollDown();
+  }
+  async function processCard(items) {
+    const card = el(`<div class="process"><div class="process-title"><span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/></svg></span>📄 Resume received</div></div>`);
+    chat.appendChild(card); scrollDown();
+    for (const it of items) {
+      const row = el(`<div class="p-item"><div class="chk"></div><span>${it}</span></div>`);
+      card.appendChild(row); scrollDown();
+      await sleep(520);
+      row.classList.add("done");
+      row.querySelector(".chk").innerHTML = CHECK;
+    }
+    await sleep(250);
+  }
+  function summaryCard(title, rows) {
+    const rowsHtml = rows.map((r) => `<div class="s-row"><span class="k">${r.k}</span><span class="v">${r.v}</span></div>`).join("");
+    chat.appendChild(el(`<div class="summary"><h4><span class="ok">${CHECK}</span>${title}</h4>${rowsHtml}</div>`));
+    scrollDown();
+  }
+  function jobCard(job, onApply) {
+    const card = el(`<div class="job">
+      <div class="job-top"><div class="job-emoji">${job.emoji}</div><div><div class="job-title">${job.title}</div><div class="job-co">${job.co}</div></div></div>
+      <div class="job-meta"><span>📍 <b>${job.loc}</b></span><span>💰 <b>${job.pay}</b></span><span>🧭 Experience: <b>${job.exp}</b> · ${job.type}</span></div>
+      <div class="job-actions"><button type="button" class="viewBtn">View Job</button><button type="button" class="applyBtn">Apply</button></div>
+    </div>`);
+    card.querySelector(".viewBtn").addEventListener("click", async () => {
+      if (busy) return;
+      await typing(500);
+      botText(`<b>${job.title}</b> · ${job.co}<br><br>📍 ${job.loc}<br>💰 ${job.pay}<br>Experience: ${job.exp}<br>${job.type}`);
+    });
+    card.querySelector(".applyBtn").addEventListener("click", () => {
+      if (busy) return;
+      card.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+      onApply(job);
+    });
+    chat.appendChild(card); scrollDown();
+  }
+  function successCard(title, sub) {
+    chat.appendChild(el(`<div class="success"><div class="badge-ok">${CHECK}</div><div class="t">${title}</div><div class="s">${sub}</div></div>`));
+    scrollDown();
+  }
+
+  async function startConversation() {
+    const cta = document.getElementById("startCta");
+    if (cta) cta.remove();
+    userText("Hi");
+    await sleep(350);
+    await typing(750);
+    botText(t().welcome);
+    qrList([
+      { label: "🇮🇳 हिंदी", onClick: () => onLanguage("hi", "हिंदी") },
+      { label: "🇬🇧 English", onClick: () => onLanguage("en", "English") },
+    ], true);
+  }
+
+  async function onLanguage(code, label) {
+    locale = code;
+    confirmChip(label);
+    await sleep(280);
+    await typing(650);
+    botText(t().afterLang);
+    await sleep(420);
+    await typing(480);
+    botText(t().resumeQ);
+    qrList([
+      { label: t().resumeYes, onClick: () => pathResumeYes() },
+      { label: t().resumeNo, onClick: () => pathResumeNo() },
+    ]);
+  }
+
+  async function pathResumeYes() {
+    userText(t().resumeYes);
+    await sleep(350);
+    await typing(650);
+    botText(t().sendResume);
+    qrList([{ label: t().attach, onClick: () => onResumeAttached() }], true);
+  }
+
+  async function onResumeAttached() {
+    await sleep(250);
+    docBubble("Ramesh_Driver_Resume.pdf", "642 KB");
+    await sleep(450);
+    await typing(550);
+    botText(t().resumeGot);
+    await sleep(320);
+    await processCard([
+      locale === "hi" ? "Resume uploaded" : "Resume uploaded",
+      locale === "hi" ? "Reading experience" : "Reading experience",
+      locale === "hi" ? "Identifying skills" : "Identifying skills",
+      locale === "hi" ? "Preparing your profile" : "Preparing your profile",
+    ]);
+    botText(t().extractedIntro);
+    profile = {
+      role: "Driver",
+      experience: locale === "hi" ? "3–5 साल" : "3–5 years",
+      skills: "Driving, Navigation, Customer Handling",
+      location: "Noida",
+      availability: locale === "hi" ? "तुरंत" : "Immediately",
+      path: "resume",
+    };
+    summaryCard(locale === "hi" ? "Resume से निकला" : "From your resume", [
+      { k: "Role", v: profile.role },
+      { k: "Experience", v: profile.experience },
+      { k: "Skills", v: profile.skills },
+      { k: "Location", v: profile.location },
+    ]);
+    botText(t().confirmInfo);
+    qrList([
+      { label: t().ok, primary: true, onClick: () => onResumeInfoConfirmed(true) },
+      { label: t().fix, onClick: () => onResumeInfoConfirmed(false) },
+    ], true);
+  }
+
+  async function onResumeInfoConfirmed(ok) {
+    userText(ok ? t().ok : t().fix);
+    if (!ok) {
+      await sleep(300);
+      await typing(600);
+      botText(t().editHint);
+      hideProgress();
+      setProgress(0, 6);
+      return askCurrentWork();
+    }
+    await sleep(350);
+    await typing(650);
+    botText(t().seekRole);
+    qrList([
+      { label: "🚗 Driver", onClick: (l) => onFinalRole(l) },
+      { label: "🔧 Technician", onClick: (l) => onFinalRole(l) },
+      { label: "📦 Warehouse", onClick: (l) => onFinalRole(l) },
+      { label: "💼 Other", onClick: (l) => onFinalRole(l) },
+      { label: locale === "hi" ? "✍️ अपना role लिखें" : "✍️ Type your role", onClick: () => onFinalRole(locale === "hi" ? "Custom role" : "Custom role") },
+    ], true);
+  }
+
+  async function onFinalRole(role) {
+    userText(role);
+    profile.role = role.replace(/^[^A-Za-z0-9\u0900-\u097F]+/, "").trim() || role;
+    if (role.includes("Driver")) profile.role = "Driver";
+    if (role.includes("Technician")) profile.role = "Technician";
+    if (role.includes("Warehouse")) profile.role = "Warehouse";
+    await sleep(350);
+    showProfileSummary();
+  }
+
+  async function pathResumeNo() {
+    userText(t().resumeNo);
+    await sleep(350);
+    await typing(650);
+    botText(t().noResumeOk);
+    await sleep(420);
+    setProgress(0, 6);
+    askCurrentWork();
+  }
+
+  async function askCurrentWork() {
+    await typing(550);
+    setProgress(1, 6);
+    botText(t().currentWork);
+    qrList([
+      { label: "🚗 Driver", onClick: (l) => onCurrentWork(l) },
+      { label: "🔧 Technician", onClick: (l) => onCurrentWork(l) },
+      { label: "📦 Warehouse / Delivery", onClick: (l) => onCurrentWork(l) },
+      { label: "👷 Helper / Worker", onClick: (l) => onCurrentWork(l) },
+      { label: "🏗️ Construction", onClick: (l) => onCurrentWork(l) },
+      { label: locale === "hi" ? "✍️ कुछ और" : "✍️ Something else", onClick: () => onCurrentWork(locale === "hi" ? "Other" : "Other") },
+      { label: locale === "hi" ? "🎙️ बोलकर बताएं" : "🎙️ Tell by voice", voice: true, onClick: () => onVoiceCurrentWork() },
+    ], true);
+  }
+
+  async function onVoiceCurrentWork() {
+    await sleep(250);
+    voiceBubble("0:08");
+    await sleep(650);
+    await typing(650);
+    botText(t().voiceUnderstood);
+    qrList([
+      { label: t().ok, primary: true, onClick: () => onCurrentWork("4-Wheeler Driver") },
+      { label: locale === "hi" ? "✏️ दोबारा बताएं" : "✏️ Say again", onClick: () => askCurrentWork() },
+    ], true);
+  }
+
+  async function onCurrentWork(work) {
+    userText(work);
+    profile.currentWork = work;
+    await sleep(350);
+    await typing(650);
+    setProgress(2, 6);
+    chat.appendChild(el(`<div class="path-note">${locale === "hi" ? "Desired role" : "Desired role"}</div>`));
+    botText(t().desiredRole);
+    qrList([
+      { label: "🚗 Driver", onClick: (l) => onDesiredRole(l) },
+      { label: "🚚 Delivery Driver", onClick: (l) => onDesiredRole(l) },
+      { label: "🔧 Technician", onClick: (l) => onDesiredRole(l) },
+      { label: "📦 Warehouse Executive", onClick: (l) => onDesiredRole(l) },
+      { label: "👷 Helper", onClick: (l) => onDesiredRole(l) },
+      { label: locale === "hi" ? "✍️ दूसरा role" : "✍️ Another role", onClick: () => onDesiredRole("Other role") },
+    ], true);
+  }
+
+  async function onDesiredRole(role) {
+    userText(role);
+    profile.role = role.includes("Driver") && !role.includes("Delivery") ? "Driver"
+      : role.includes("Delivery") ? "Delivery Driver"
+      : role.includes("Technician") ? "Technician"
+      : role.includes("Warehouse") ? "Warehouse Executive"
+      : role.includes("Helper") ? "Helper"
+      : role;
+    await sleep(350);
+    await typing(550);
+    setProgress(3, 6);
+    botText(t().experience);
+    qrList([
+      { label: "🌱 Fresher", onClick: (l) => onExperience(l) },
+      { label: locale === "hi" ? "1–2 साल" : "1–2 years", onClick: (l) => onExperience(l) },
+      { label: locale === "hi" ? "3–5 साल" : "3–5 years", onClick: (l) => onExperience(l) },
+      { label: locale === "hi" ? "5+ साल" : "5+ years", onClick: (l) => onExperience(l) },
+    ], true);
+  }
+
+  async function onExperience(exp) {
+    userText(exp);
+    profile.experience = exp;
+    await sleep(350);
+    await typing(550);
+    setProgress(4, 6);
+    botText(t().location);
+    qrList([
+      { label: locale === "hi" ? "📍 Current location" : "📍 Current location", onClick: () => onLocation(locale === "hi" ? "Current location" : "Current location") },
+      { label: "🏙️ Noida", onClick: (l) => onLocation(l) },
+      { label: "🏙️ Delhi", onClick: (l) => onLocation(l) },
+      { label: "🏙️ Gurgaon", onClick: (l) => onLocation(l) },
+      { label: "📍 Share location", onClick: () => onLocation("Noida Sector 62") },
+      { label: locale === "hi" ? "📍 Other location" : "📍 Other location", onClick: () => onLocation("Other") },
+    ], true);
+  }
+
+  async function onLocation(loc) {
+    userText(loc);
+    profile.location = loc.replace(/^[^A-Za-z0-9\u0900-\u097F]+/, "").trim() || loc;
+    if (loc.includes("Noida")) profile.location = loc.includes("62") ? "Noida Sector 62" : "Noida";
+    await sleep(350);
+    await typing(550);
+    setProgress(5, 6);
+    botText(t().skills);
+    const options = ["Driving", "Vehicle Maintenance", "Loading / Unloading", "Customer Handling", "GPS / Navigation"];
+    const wrap = el(`<div class="skills" role="group" aria-label="Skills"></div>`);
+    const selected = new Set();
+    const doneBtn = el(`<button type="button" class="done-btn">${t().done}</button>`);
+    options.forEach((o) => {
+      const p = el(`<button type="button" class="skill">${o}</button>`);
+      p.addEventListener("click", () => {
+        p.classList.toggle("on");
+        if (selected.has(o)) selected.delete(o); else selected.add(o);
+        doneBtn.classList.toggle("on", selected.size > 0);
+      });
+      wrap.appendChild(p);
+    });
+    chat.appendChild(wrap);
+    doneBtn.addEventListener("click", () => {
+      if (!selected.size || busy) return;
+      wrap.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+      doneBtn.disabled = true;
+      doneBtn.classList.remove("on");
+      onSkills([...selected].join(", "));
+    });
+    chat.appendChild(doneBtn);
+    scrollDown();
+  }
+
+  async function onSkills(skills) {
+    userText(`✓ ${skills}`);
+    profile.skills = skills;
+    await sleep(350);
+    await typing(550);
+    setProgress(6, 6);
+    botText(t().availability);
+    qrList([
+      { label: locale === "hi" ? "⚡ तुरंत" : "⚡ Immediately", onClick: (l) => onAvailability(locale === "hi" ? "तुरंत" : "Immediately") },
+      { label: locale === "hi" ? "📅 7 दिनों में" : "📅 In 7 days", onClick: (l) => onAvailability(l) },
+      { label: locale === "hi" ? "📅 15 दिनों में" : "📅 In 15 days", onClick: (l) => onAvailability(l) },
+      { label: locale === "hi" ? "📅 बाद में" : "📅 Later", onClick: (l) => onAvailability(l) },
+    ], true);
+  }
+
+  async function onAvailability(av) {
+    userText(av);
+    profile.availability = av;
+    await sleep(350);
+    hideProgress();
+    showProfileSummary();
+  }
+
+  async function showProfileSummary() {
+    await typing(650);
+    botText(t().profileReady);
+    await sleep(250);
+    const rows = [
+      { k: "Role", v: profile.role || "—" },
+      { k: "Experience", v: profile.experience || "—" },
+      { k: "Location", v: profile.location || "—" },
+      { k: "Skills", v: profile.skills || "—" },
+    ];
+    if (profile.availability) rows.push({ k: "Availability", v: profile.availability });
+    if (profile.currentWork) rows.unshift({ k: locale === "hi" ? "Current work" : "Current work", v: profile.currentWork });
+    summaryCard(locale === "hi" ? "Profile Summary" : "Profile Summary", rows);
+    botText(t().profileConfirm);
+    qrList([
+      { label: t().confirmYes, primary: true, onClick: () => findJobs() },
+      { label: t().confirmEdit, onClick: () => editProfile() },
+    ], true);
+  }
+
+  async function editProfile() {
+    userText(t().confirmEdit);
+    await sleep(300);
+    await typing(550);
+    botText(t().editHint);
+    setProgress(0, 6);
+    askCurrentWork();
+  }
+
+  async function findJobs() {
+    userText(t().confirmYes);
+    await sleep(350);
+    await typing(1100);
+    botText(t().searching);
+    await sleep(280);
+    await typing(900);
+    botText(t().found);
+    await sleep(220);
+    for (const job of JOBS) {
+      jobCard(job, (j) => onApplyTap(j));
+      await sleep(280);
+    }
+  }
+
+  async function onApplyTap(job) {
+    await sleep(180);
+    await typing(480);
+    botText(t().applyIntro(job));
+    await sleep(250);
+    botText(t().applyQ);
+    qrList([
+      { label: t().apply, primary: true, onClick: () => onApplyConfirm(job) },
+      { label: t().back, onClick: async () => {
+        userText(t().back);
+        await sleep(250);
+        await typing(400);
+        botText(locale === "hi" ? "ठीक है — ऊपर jobs देख सकते हैं।" : "Okay — you can review the jobs above.");
+      }},
+    ], true);
+  }
+
+  async function onApplyConfirm(job) {
+    userText(t().apply);
+    await sleep(350);
+    await typing(850);
+    successCard(t().successTitle, t().successSub(job));
+    await sleep(280);
+    qrList([
+      { label: t().track, onClick: async () => { userText(t().track); await typing(500); botText(locale === "hi" ? "आपकी application review में है। अपडेट WhatsApp पर आएगा।" : "Your application is under review. We'll update you here."); } },
+      { label: t().moreJobs, onClick: async () => { userText(t().moreJobs); await typing(700); botText(t().found); JOBS.forEach((j) => jobCard(j, (x) => onApplyTap(x))); } },
+      { label: t().viewProfile, onClick: async () => { userText(t().viewProfile); await typing(500); showProfileSummary(); } },
+    ], true);
+  }
+
+  function resetChat() {
+    profile = {};
+    locale = "hi";
+    busy = false;
+    hideProgress();
+    statusText.textContent = "Online";
+    chat.innerHTML = `<div class="daychip">TODAY</div>
+      <div class="start" id="startCta">
+        <button type="button" id="startBtn">👋 Say “Hi” to start</button>
+        <p>One step at a time — no long forms</p>
+      </div>`;
+    document.getElementById("startBtn").addEventListener("click", startConversation);
+  }
+
+  document.getElementById("startBtn").addEventListener("click", startConversation);
+  document.getElementById("replayBtn").addEventListener("click", resetChat);
+})();
+</script>
+</body>
+</html>

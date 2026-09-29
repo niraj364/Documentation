@@ -107,7 +107,7 @@ Hi / Hello
 
 ### Inactivity + restart
 
-1. After every real inbound message, Celery schedules a check in **30 seconds** (`WHATSAPP_INACTIVITY_SECONDS`).
+1. After every real inbound message, Celery schedules a check in **60 seconds** (`WHATSAPP_INACTIVITY_SECONDS`).
 2. If the user stays idle, a locale-aware reminder is sent (“type Hi to continue…”).
 3. Reminder is also allowed after **profile completed** (not while voice is processing).
 4. If the user sends **Hi / hi / HI / Hello** **after** that reminder, the session is **fully reset** and the **same** welcome path runs again (image → greeting → language → occupation → …).
@@ -231,9 +231,17 @@ No JWT on the webhook (Meta cannot send app tokens). CSRF / DRF auth are disable
 
 - Django ORM / Postgres — sessions & profiles  
 - Celery + RabbitMQ — voice + inactivity  
-- Promo image uses Graph upload by default (not Azure)
+- Promo image uses Graph upload by default (not Azure)  
+- ID photos (Phase 3) use Azure Blob (`WhatsAppMediaAttachment`)
 
----
+### 7.5 Employer conversation viewer (Phase 3)
+
+```text
+GET /waphire-api/v1/whatsapp/sessions/
+GET /waphire-api/v1/whatsapp/sessions/{id}/
+```
+
+JWT required. Allowed for **employer** role or **staff**. Read-only; returns SOP answers + media attachment metadata (blob paths, not raw ID bytes).
 
 ## 8. How outbound WhatsApp sending works
 
@@ -263,7 +271,7 @@ Set in `backend/.env` (see `backend/.env.example`):
 | `WHATSAPP_TOKEN` | Temporary or system-user Graph access token |
 | `WHATSAPP_PHONE_NUMBER_ID` | Cloud API phone number id |
 | `WHATSAPP_VERIFY_TOKEN` | Must match Meta webhook verify token |
-| `WHATSAPP_INACTIVITY_SECONDS` | Idle delay before reminder (default `30`) |
+| `WHATSAPP_INACTIVITY_SECONDS` | Idle delay before reminder (default `60`) |
 | `WHATSAPP_VOICE_MIN_CONFIDENCE` | Min Claude confidence for voice accept |
 | `WHATSAPP_ASR_MOCK` | Skip Sarvam in local/demo |
 | `WHATSAPP_PROMO_IMAGE_MEDIA_ID` | Optional pre-uploaded media id |
@@ -300,6 +308,14 @@ Run tests:
 
 ```powershell
 docker compose exec -T web python manage.py test backend.whatsapp_bot --verbosity=1
+```
+
+Worker (must include WhatsApp queues):
+
+```powershell
+docker compose up -d --force-recreate worker
+# Dedicated chat/voice/outbound (optional):
+docker compose --profile wa-scale up -d
 ```
 
 ---

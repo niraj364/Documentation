@@ -37,7 +37,35 @@ idempotency pattern (`ProcessedWhatsAppMessage`), SOP JSON, existing deploy (gun
 
 1.2M is **registered / cumulative** users, **not** simultaneous sockets.
 
-### 1.1 Assumptions (explicit)
+**Product ask (this iteration):** ~**62,000 concurrent active WhatsApp conversations**.
+That is **not** 62k messages at the same instant. See
+`backend/whatsapp_bot/capacity.py` for the explicit symbols used in code/docs.
+
+### 1.0 Concurrent-conversation envelope (62k)
+
+| Symbol | Assumption | Rationale |
+|--------|------------|-----------|
+| `C` | 62,000 concurrent active conversations | Product target |
+| `send_frac` | 1–3% of `C` send an inbound msg in a given second | Chatty onboarding bursts |
+| `voice_frac` | 15–25% of sessions include ≥1 voice note | Grey-collar capture |
+| `retry_overhead` | 1.15× | Meta webhook + outbound retries |
+
+| Metric | Planning (mid) | Peak headroom | How derived |
+|--------|----------------|---------------|-------------|
+| Concurrent conversations | 62k | 62k | Given |
+| Peak inbound msgs/sec | ~600–1,200 | **~1,400** | `C × send_frac × retry` |
+| Webhook HTTP RPS | ~800–1,500 | **~1,800** | Inbound + statuses |
+| Outbound Graph calls/sec | Cap to Meta | **≤100** (token bucket) | Fair queue on `whatsapp_outbound` |
+| Celery chat concurrency | 32–64 | **64–128** | Chat turns ~100–500ms + Graph |
+| Celery voice concurrency | 16–32 | **32–64** prefetch=1 | ASR+LLM 8–20s |
+| Gunicorn replicas | 4–8 | **8–16** × 4 workers | Thin ACK only after Phase 1 |
+| RabbitMQ throughput | ≥1k msg/s | **≥2k** headroom | Chat + voice + outbound |
+| Postgres WA writes/sec | ~200–500 | **~800** | Session + idempotency; Redis in Phase 2 |
+
+If the target is instead **62k DAU** (not concurrent), peak concurrent sessions fall to
+~2k–4k and peak inbound to ~40–120 msg/s — reuse §1.2 below.
+
+### 1.1 Assumptions (1.2M registered — maturity)
 
 | Symbol | Assumption | Rationale |
 |--------|------------|-----------|
@@ -156,27 +184,34 @@ Tune these after 2–4 weeks of production metrics; treat below as **planning en
 - Settings + `.env.example` for `WHATSAPP_*` / `SARVAM_*`
 - Keep SOP voice/inactivity Celery tasks
 
-### Phase 1 — Production hardening (next)
-1. **Fast ACK:** webhook only validates → claims `message.id` → enqueues `process_inbound` → HTTP 200  
+### Phase 1 — Production hardening (IMPLEMENTED in codebase)
+1. **Fast ACK:** webhook validates → enqueues `process_inbound` → HTTP 200  
 2. Dedicated Celery queues: `whatsapp_chat`, `whatsapp_voice`, `whatsapp_outbound`  
-3. Outbound worker with exponential backoff + Meta error taxonomy (rate limit / token expiry)  
-4. Delivery/read: persist `statuses` webhooks (today ignored)  
-5. Block/unblock: store `wa_id` block list; skip outbound  
-6. Human handoff: session status `handed_off` + employer inbox hook (reuse outreach/inbox patterns)  
-7. Observability: structured logs, queue depth, ASR/LLM latency, Graph 4xx/5xx
+3. Outbound Graph send with exponential backoff + Meta error taxonomy (429/5xx retry; 401/403 fatal)  
+4. Delivery/read: `process_status_update` logs statuses (table/partition = Phase 2)  
+5. Optional App Secret HMAC (`WHATSAPP_APP_SECRET` / `X-Hub-Signature-256`)  
+6. Compose: default worker listens to all WA queues; `--profile wa-scale` for dedicated workers  
+7. Observability: structured logs (queue lag / metrics exporters = follow-up)
 
-### Phase 2 — Scale to 1.2M envelope
-1. Introduce **Redis** (session snapshot, inactivity tokens, media-id cache, rate limits)  
-2. Postgres indexes + partition `ProcessedWhatsAppMessage` by month  
-3. Read replica for admin/analytics  
-4. Horizontal Celery voice pool; isolate from email/newsletter workers  
-5. Optional Cassandra/Scylla **only if** full message history QPS exceeds Postgres comfort (~after measuring)
+**Not yet (after Phase 1):** Redis session cache, block list, human handoff inbox, partitioned idempotency table — see Phase 2 (now implemented).
 
-### Phase 3 — Product expansion
-- Buttons/lists already supported; extend SOP JSON for more roles  
-- Documents/images → Azure + optional OCR  
-- Resume after long inactivity (template messages within Meta 24h window / template outside)  
-- Employer-facing conversation viewer (read-only) without new microservice
+### Phase 2 — Scale envelope (IMPLEMENTED in codebase)
+1. **Redis** via `REDIS_URL` + Django cache (`cache_store.py`: session snapshot, promo media id, inbound/outbound rate limits, inactivity schedule coalesce)  
+2. **Indexes + retention** on `ProcessedWhatsAppMessage` / delivery statuses; daily `purge_processed_messages` beat task; ops note for native monthly PARTITION  
+3. **Optional read replica** (`APP_DATABASE_REPLICA_URL` + `WhatsAppReplicaRouter`)  
+4. **Worker isolation:** `worker` = `celery` only (email/blog); `worker-wa` = chat+outbound; `worker-wa-voice` = voice prefetch=1  
+5. **Delivery status table** `WhatsAppDeliveryStatus`  
+6. **Block list** `WhatsAppBlockList` + outbound/inbound guards  
+7. **Human handoff** session status `handed_off` (+ admin action)
+
+**Still deferred:** Cassandra/Scylla message log (only if measured Postgres QPS demands it).
+
+### Phase 3 — Product expansion (IMPLEMENTED in codebase)
+1. **More SOP roles** — plumber / painter banks in `driver_four_wheeler_v1.json`  
+2. **ID media** — image/document → Azure Blob via `azure_media.py` + `WhatsAppMediaAttachment`  
+3. **Optional OCR** — `process_id_document_ocr` when `WHATSAPP_OCR_ENABLED=true`  
+4. **24h re-engage** — `reengage.send_reengage_message` / `reengage_session` task (free-form inside window, Meta template outside via `WHATSAPP_REENGAGE_TEMPLATE_NAME`)  
+5. **Employer conversation viewer** — read-only `GET /waphire-api/v1/whatsapp/sessions/` (+ detail)
 
 ---
 

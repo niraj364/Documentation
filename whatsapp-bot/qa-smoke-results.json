@@ -1,0 +1,197 @@
+﻿[
+    {
+        "ID":  [
+                   "TC-001",
+                   "Smoke",
+                   "PASS",
+                   "CRITICAL",
+                   "Backend webhook responds",
+                   "ok"
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-003",
+                   "Smoke",
+                   "PASS",
+                   "CRITICAL",
+                   "DB connected",
+                   ""
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-004",
+                   "Smoke",
+                   "PASS",
+                   "CRITICAL",
+                   "Redis ping ok",
+                   ""
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-005",
+                   "Smoke",
+                   "PASS",
+                   "CRITICAL",
+                   "Broker ping",
+                   "ok"
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-006",
+                   "Smoke",
+                   "PASS",
+                   "HIGH",
+                   "worker Up",
+                   "May only be generic worker; check queues"
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-007",
+                   "Smoke",
+                   "PASS",
+                   "CRITICAL",
+                   "Reachable",
+                   ""
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-008",
+                   "Smoke",
+                   "PASS",
+                   "CRITICAL",
+                   "Verify OK",
+                   ""
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-009",
+                   "Smoke",
+                   "PASS",
+                   "CRITICAL",
+                   "WHATSAPP_TOKEN=Y|WHATSAPP_PHONE_NUMBER_ID=Y|WHATSAPP_VERIFY_TOKEN=Y|WHATSAPP_DEFAULT_SOP_ID=Y|REDIS_URL=Y|ANTHROPIC_API_KEY=Y",
+                   ""
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-002",
+                   "Smoke",
+                   "PASS",
+                   "HIGH",
+                   "status 200",
+                   ""
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-010",
+                   "Smoke",
+                   "BLOCKED",
+                   "HIGH",
+                   "docker :   File \"\u003cstring\u003e\", line 5\r\nAt C:\\Users\\Dell\\AppData\\Local\\Temp\\ps-script-df5ff118-0a5a-4437-8974-b1ded64fefef.ps1:137 char:7\r\n+ $az = docker compose exec -T web python -c \"\r\n+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n    + CategoryInfo          : NotSpecified: (  File \"\u003cstring\u003e\", line 5:String) [], RemoteException\r\n    + FullyQualifiedErrorId : NativeCommandError\r\n \r\n    c=BlobServiceClient(account_url=f\" https://  \\,\r\n                                    ^\r\nSyntaxError: unterminated f-string literal (detected at line 5)",
+                   ""
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-011",
+                   "Smoke",
+                   "PASS",
+                   "MEDIUM",
+                   "ASR_MOCK/config present: true",
+                   "Mock mode acceptable for QA"
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-012",
+                   "Smoke",
+                   "PASS",
+                   "HIGH",
+                   "CLAUDE_KEY Y MODEL claude-haiku-4-5-20251001",
+                   "Key present; live LLM call not asserted here"
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    },
+    {
+        "ID":  [
+                   "TC-013",
+                   "Smoke",
+                   "PASS",
+                   "CRITICAL",
+                   "No WA/Azure/Claude secrets in frontend source scan",
+                   ""
+               ],
+        "Cat":  null,
+        "Status":  null,
+        "Sev":  null,
+        "Actual":  null,
+        "Notes":  null
+    }
+]
