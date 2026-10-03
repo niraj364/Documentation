@@ -47,7 +47,7 @@
 | `whatsapp_bot/inactivity.py` | Idle reminder scheduling and evaluation. |
 | `whatsapp_bot/welcome_image.py` | Promo image before the greeting. |
 | `whatsapp_bot/i18n.py` | `MESSAGES` strings, `greeting_text`, `session_locale`, `persist_locale`, `sop_field`. |
-| `whatsapp_bot/asr.py` | `transcribe_audio` (Sarvam `saaras:v3`, or mock). |
+| `whatsapp_bot/asr.py` | `transcribe` / `transcribe_audio` (local faster-whisper, or mock). |
 | `whatsapp_bot/extraction.py` | `extract_experience_from_transcript` (Claude JSON extraction). |
 | `whatsapp_bot/media.py` / `azure_media.py` | Download media from Graph API; store in Azure blob. |
 | `accounts/resume_parse.py` | `parse_resume_pdf_bytes` (Anthropic Messages API, PDF beta), `store_resume_bytes`, `experience_years_from_work`. |
@@ -551,8 +551,8 @@ applied…") + buttons `track_apps`, `more_jobs`, `view_profile`; schedules an i
 - On a button/list step → legacy `_handle_voice` → i18n `voice_not_needed`.
 - Before queuing: "voice ack" message and status `processing_voice`.
 
-`process_onboarding_voice`: `media.download_whatsapp_media` → `asr.transcribe_audio` (Sarvam `saaras:v3`,
-`en-IN`/`hi-IN`; mock transcript when `WHATSAPP_ASR_MOCK`) → sends "I heard: *…*" → calls
+`process_onboarding_voice`: audio (Azure copy on retry, else Meta download + Azure store) → `asr.transcribe_audio`
+(faster-whisper, Hindi/English auto-detect, never translated; mock transcript when `WHATSAPP_ASR_MOCK`) → sends "I heard: *…*" → calls
 `handle_onboarding_text(session, transcript)`, so a transcript follows exactly the same logic as typed text.
 Failure → buttons `🎤 Try Again` / `💬 Type Instead`, status `awaiting_voice`, task retry (except for an empty transcript).
 
@@ -641,7 +641,7 @@ From `settings.py` (defaults in brackets):
 | `WHATSAPP_PROCESSED_RETENTION_DAYS` [90] / status retention [30] | Purge task |
 | `WHATSAPP_PROMO_IMAGE_MEDIA_ID` / `WHATSAPP_PROMO_IMAGE_URL` | Welcome image source (else uploads `assets/waphire_promo.jpg`) |
 | `WHATSAPP_ASR_MOCK` [False], `WHATSAPP_ASR_MOCK_TRANSCRIPT` | Mock ASR |
-| `SARVAM_*` | Sarvam ASR key/model |
+| `WHISPER_*` | faster-whisper model / device / languages |
 | `ANTHROPIC_API_KEY`, `CLAUDE_RESUME_MODEL` | Resume parsing and transcript extraction |
 | `WHATSAPP_REENGAGE_TEMPLATE_NAME` | Template for re-engagement (unused path) |
 | `WHATSAPP_DEMO_API` | Enables `demo/inbound/` outside DEBUG |

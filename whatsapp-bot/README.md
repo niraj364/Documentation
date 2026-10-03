@@ -20,7 +20,7 @@ It matches the Django app `backend.whatsapp_bot` as it exists today.
 | Inactivity reminder | `backend/src/backend/whatsapp_bot/inactivity.py` |
 | Celery tasks | `backend/src/backend/whatsapp_bot/tasks.py` |
 | i18n / system copy | `backend/src/backend/whatsapp_bot/i18n.py` |
-| ASR (Sarvam) | `backend/src/backend/whatsapp_bot/asr.py` |
+| ASR (faster-whisper) | `backend/src/backend/whatsapp_bot/asr.py` |
 | Claude extraction | `backend/src/backend/whatsapp_bot/extraction.py` |
 | Profile sync | `backend/src/backend/whatsapp_bot/profile_sync.py` |
 | Models | `backend/src/backend/whatsapp_bot/models.py` |
@@ -80,7 +80,7 @@ Django ── WhatsAppWebhookView
     ├─ inactivity               Celery countdown reminder
     │
     └─ Celery worker (async)
-          ├─ process_experience_voice       download media → Sarvam ASR → Claude extract
+          ├─ process_experience_voice       download media → faster-whisper → Claude extract
           ├─ process_experience_transcript  typed fallback → Claude extract
           └─ send_inactivity_reminder       evaluate + send idle copy
 ```
@@ -133,7 +133,7 @@ Webhook retries use Meta `message.id`. `ProcessedWhatsAppMessage` ensures the sa
 | `welcome_image.py` | Send promo image once per entry; media-id cache |
 | `inactivity.py` | Activity tokens + schedule/evaluate reminder |
 | `tasks.py` | Celery: voice, transcript, inactivity reminder |
-| `asr.py` | Sarvam speech-to-text (mockable) |
+| `asr.py` | faster-whisper speech-to-text (mockable) |
 | `extraction.py` | Claude structured extract from transcript |
 | `profile_sync.py` | Upsert `WhatsAppWorkerProfile`; sync to `User` |
 | `models.py` | Session, processed messages, worker profile |
@@ -216,11 +216,14 @@ GET/POST /waphire-api/v1/whatsapp/webhook/
 
 No JWT on the webhook (Meta cannot send app tokens). CSRF / DRF auth are disabled for this view; Meta’s verify token + HTTPS tunnel protect the endpoint in practice.
 
-### 7.2 Sarvam ASR (speech-to-text)
+### 7.2 faster-whisper ASR (speech-to-text)
 
-- Used for Driver **voice experience** notes.  
-- `POST` to `SARVAM_ASR_URL` (default Saaras).  
-- Local demos: `WHATSAPP_ASR_MOCK=true` skips Sarvam.
+- Runs locally inside the `worker-wa-voice` Celery workers (`whatsapp_voice` queue) — no external ASR API.  
+- Model is loaded once per worker process (`WHISPER_MODEL`, `WHISPER_DEVICE`, `WHISPER_COMPUTE_TYPE`); cached in the `whisper_models` volume.  
+- Language auto-detected among `WHISPER_LANGUAGES` (default `hi,en`); transcripts are never translated.  
+- Voice audio is kept on Azure Blob (`WHATSAPP_STORE_VOICE_AUDIO`); retries reuse the stored copy / transcript.  
+- Local demos / tests: `WHATSAPP_ASR_MOCK=true` skips Whisper.  
+- Daily counters: `python manage.py whatsapp_voice_metrics`; model check: `python manage.py whisper_warmup`.
 
 ### 7.3 Anthropic Claude (via existing resume-parse helper)
 
@@ -273,10 +276,10 @@ Set in `backend/.env` (see `backend/.env.example`):
 | `WHATSAPP_VERIFY_TOKEN` | Must match Meta webhook verify token |
 | `WHATSAPP_INACTIVITY_SECONDS` | Idle delay before reminder (default `60`) |
 | `WHATSAPP_VOICE_MIN_CONFIDENCE` | Min Claude confidence for voice accept |
-| `WHATSAPP_ASR_MOCK` | Skip Sarvam in local/demo |
+| `WHATSAPP_ASR_MOCK` | Skip Whisper in local/demo |
 | `WHATSAPP_PROMO_IMAGE_MEDIA_ID` | Optional pre-uploaded media id |
 | `WHATSAPP_PROMO_IMAGE_URL` | Optional public HTTPS image URL |
-| `SARVAM_API_KEY` / `SARVAM_*` | ASR |
+| `WHISPER_*` | faster-whisper model / device / languages (see `.env.example`) |
 | `ANTHROPIC_API_KEY` | Claude extraction |
 
 **Note:** Meta **temporary** tokens expire often. If the bot receives `Hi` (webhook 200) but never replies, check logs for Graph `401` / session expired and regenerate `WHATSAPP_TOKEN`, then recreate `web` + `worker` so env reloads.

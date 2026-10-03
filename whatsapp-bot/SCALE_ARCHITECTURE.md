@@ -142,7 +142,7 @@ Tune these after 2–4 weeks of production metrics; treat below as **planning en
          │                │                 │
          ▼                ▼                 ▼
      SOP Engine         ASR             Graph API
-         │            (Sarvam)           (retry)
+         │        (faster-whisper)       (retry)
          ▼                ▼
    Conversation         Claude extract
          │                │
@@ -181,7 +181,7 @@ Tune these after 2–4 weeks of production metrics; treat below as **planning en
 - Restore `backend.whatsapp_bot` from VCS
 - Register in `INSTALLED_APPS`
 - Mount `/waphire-api/v1/whatsapp/` (+ `/api/v1/whatsapp/`)
-- Settings + `.env.example` for `WHATSAPP_*` / `SARVAM_*`
+- Settings + `.env.example` for `WHATSAPP_*` / `WHISPER_*`
 - Keep SOP voice/inactivity Celery tasks
 
 ### Phase 1 — Production hardening (IMPLEMENTED in codebase)
